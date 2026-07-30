@@ -8,14 +8,13 @@ import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCreateIceCream from './pages/admin/AdminCreateIceCream';
 import AdminTransactions from './pages/admin/AdminTransactions';
-import AdminProfile from './pages/admin/AdminProfile';
 
 // Customer
 import CustomerLayout from './pages/customer/CustomerLayout';
 import CustomerShop from './pages/customer/CustomerShop';
 import CustomerCart from './pages/customer/CustomerCart';
 import CustomerHistory from './pages/customer/CustomerHistory';
-import CustomerProfile from './pages/customer/CustomerProfile';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -31,7 +30,7 @@ function App() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="create" element={<AdminCreateIceCream />} />
           <Route path="transactions" element={<AdminTransactions />} />
-          <Route path="profile" element={<AdminProfile />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         {/* Customer Routes */}
@@ -40,7 +39,7 @@ function App() {
           <Route path="shop" element={<CustomerShop />} />
           <Route path="cart" element={<CustomerCart />} />
           <Route path="history" element={<CustomerHistory />} />
-          <Route path="profile" element={<CustomerProfile />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -5,6 +5,7 @@ import IceCreamCard from '../../components/IceCreamCard';
 import DebounceSearch from '../../components/DebounceSearch';
 import Pagination from '../../components/Pagination';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
+import IceCreamDetailModal from '../../components/IceCreamDetailModal';
 
 export default function AdminDashboard() {
     const [iceCreams, setIceCreams] = useState<IceCream[]>([]);
@@ -12,6 +13,7 @@ export default function AdminDashboard() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [search, setSearch] = useState('');
+    const [selectedIceCream, setSelectedIceCream] = useState<IceCream | null>(null);
 
     const fetchIceCreams = async () => {
         setLoading(true);
@@ -49,13 +51,20 @@ export default function AdminDashboard() {
                 {loading ? (
                     Array.from({ length: 25 }).map((_, i) => <LoadingSkeleton key={i} />)
                 ) : iceCreams.length > 0 ? (
-                    iceCreams.map(ic => <IceCreamCard key={ic.ID} iceCream={ic} actionLabel="Edit Price" onAction={() => {}} />)
+                    iceCreams.map(ic => <IceCreamCard key={ic.ID} iceCream={ic} actionLabel="Edit Price" onAction={() => {}} onClick={() => setSelectedIceCream(ic)} />)
                 ) : (
                     <div className="col-span-full py-20 text-center text-zinc-500 text-lg">No ice creams found.</div>
                 )}
             </div>
 
             <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+
+            {selectedIceCream && (
+                <IceCreamDetailModal 
+                    iceCream={selectedIceCream} 
+                    onClose={() => setSelectedIceCream(null)} 
+                />
+            )}
         </div>
     );
 }

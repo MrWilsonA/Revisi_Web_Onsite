@@ -23,7 +23,7 @@ func (t *TransactionRepositoryImpl) CreateTransaction(ctx context.Context, trans
 
 func (t *TransactionRepositoryImpl) GetAllTransactions(ctx context.Context) ([]domain.Transaction, error) {
 	var transactions []domain.Transaction
-	err := t.db.WithContext(ctx).Find(&transactions).Error
+	err := t.db.WithContext(ctx).Preload("Items").Find(&transactions).Error
 	return transactions, err
 }
 

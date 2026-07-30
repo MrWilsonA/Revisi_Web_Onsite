@@ -8,12 +8,17 @@ export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        if (password !== confirmPassword) {
+            setError('Password and Confirm Password must be the same');
+            return;
+        }
         setLoading(true);
         try {
             await req<RegisterResponse>('/auth/register', { email, password, username, role: 'customer' });
@@ -67,6 +72,17 @@ export default function RegisterPage() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-rose-400 transition-colors"
+                            placeholder="••••••••"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-zinc-400 text-sm font-medium mb-2">Confirm Password</label>
+                        <input
+                            type="password"
+                            required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                             className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:border-rose-400 transition-colors"
                             placeholder="••••••••"
                         />

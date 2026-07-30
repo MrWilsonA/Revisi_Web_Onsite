@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { reqGet } from '../../api/api';
 import type { Transaction } from '../../dto/Transaction';
 import Table from '../../components/Table';
+import TransactionDetailModal from '../../components/TransactionDetailModal';
 
 export default function CustomerHistory() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [selectedTrx, setSelectedTrx] = useState<Transaction | null>(null);
 
     const fetchTransactions = async () => {
         try {
@@ -27,6 +29,14 @@ export default function CustomerHistory() {
             <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${row.Status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
                 {row.Status}
             </span>
+        )},
+        { header: 'Action', accessor: (row: Transaction) => (
+            <button 
+                onClick={() => setSelectedTrx(row)}
+                className="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded text-sm font-medium transition-colors"
+            >
+                Details
+            </button>
         )}
     ];
 
@@ -37,6 +47,10 @@ export default function CustomerHistory() {
                 <p className="text-zinc-400">Review your past orders.</p>
             </div>
             <Table data={transactions} columns={columns} />
+
+            {selectedTrx && (
+                <TransactionDetailModal transaction={selectedTrx} onClose={() => setSelectedTrx(null)} />
+            )}
         </div>
     );
 }

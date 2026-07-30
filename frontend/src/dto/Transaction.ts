@@ -4,4 +4,5 @@ export interface Transaction {
     CustomerName: string;
     FinalAmount: number;
     Status: string;
+    Items?: any[];
 }

@@ -53,7 +53,7 @@ func main() {
 			break
 		}
 	}
-	if err := db.AutoMigrate(&domain.User{}, &productDomain.IceCream{}, &transactionDomain.Transaction{}); err != nil {
+	if err := db.AutoMigrate(&domain.User{}, &productDomain.IceCream{}, &transactionDomain.Transaction{}, &transactionDomain.TransactionItem{}); err != nil {
 		log.Fatalf("gagal migrasi database: %v", err)
 	}
 	cookieSecure := config.GetEnv("COOKIE_SECURE", "false") == "true"

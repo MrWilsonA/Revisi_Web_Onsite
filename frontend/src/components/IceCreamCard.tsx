@@ -4,12 +4,16 @@ interface Props {
     iceCream: IceCream;
     actionLabel?: string;
     onAction?: (id: number) => void;
+    onClick?: () => void;
 }
 
-export default function IceCreamCard({ iceCream, actionLabel, onAction }: Props) {
+export default function IceCreamCard({ iceCream, actionLabel, onAction, onClick }: Props) {
     return (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-lg transition-transform hover:-translate-y-1 hover:shadow-2xl flex flex-col">
-            <div className="h-48 w-full bg-zinc-800 relative">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-lg transition-transform hover:-translate-y-1 hover:shadow-2xl flex flex-col group relative">
+            <div 
+                className="h-48 w-full bg-zinc-800 relative cursor-pointer"
+                onClick={onClick}
+            >
                 {iceCream.PictureUrl ? (
                     <img src={iceCream.PictureUrl} alt={iceCream.Name} className="object-cover w-full h-full" />
                 ) : (
@@ -21,7 +25,12 @@ export default function IceCreamCard({ iceCream, actionLabel, onAction }: Props)
             </div>
             <div className="p-5 flex flex-col flex-1">
                 <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider mb-1">{iceCream.Flavour}</div>
-                <h3 className="text-xl font-bold text-white mb-2">{iceCream.Name}</h3>
+                <h3 
+                    className="text-xl font-bold text-white mb-2 cursor-pointer hover:text-rose-400 transition-colors"
+                    onClick={onClick}
+                >
+                    {iceCream.Name}
+                </h3>
                 <p className="text-zinc-400 text-sm mb-6 flex-1 line-clamp-3">{iceCream.Description}</p>
                 {actionLabel && onAction && (
                     <button 

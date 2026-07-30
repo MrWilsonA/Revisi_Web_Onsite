@@ -11,8 +11,14 @@ const parseJwt = (token: string) => {
     }
 };
 
+interface CartItem {
+    iceCream: IceCream;
+    quantity: number;
+    selected: boolean;
+}
+
 export default function CustomerCart() {
-    const [cartItems, setCartItems] = useState<IceCream[]>([]);
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -20,15 +26,36 @@ export default function CustomerCart() {
         setCartItems(stored);
     }, []);
 
-    const handleRemove = (index: number) => {
-        const newCart = [...cartItems];
-        newCart.splice(index, 1);
+    const updateCart = (newCart: CartItem[]) => {
         setCartItems(newCart);
         localStorage.setItem('cart', JSON.stringify(newCart));
     };
 
+    const handleRemove = (index: number) => {
+        const newCart = [...cartItems];
+        newCart.splice(index, 1);
+        updateCart(newCart);
+    };
+
+    const handleQuantity = (index: number, delta: number) => {
+        const newCart = [...cartItems];
+        if (newCart[index].quantity + delta > 0) {
+            newCart[index].quantity += delta;
+            updateCart(newCart);
+        } else {
+            handleRemove(index);
+        }
+    };
+
+    const handleToggleSelect = (index: number) => {
+        const newCart = [...cartItems];
+        newCart[index].selected = !newCart[index].selected;
+        updateCart(newCart);
+    };
+
     const handleCheckout = async () => {
-        if (cartItems.length === 0) return;
+        const selectedItems = cartItems.filter(item => item.selected);
+        if (selectedItems.length === 0) return;
         setLoading(true);
         
         let customerName = 'Customer';
@@ -40,17 +67,25 @@ export default function CustomerCart() {
             }
         }
 
-        const finalAmount = cartItems.reduce((sum, item) => sum + item.Price, 0);
+        const finalAmount = selectedItems.reduce((sum, item) => sum + (item.iceCream.Price * item.quantity), 0);
+        const itemsPayload = selectedItems.map(si => ({
+            IceCreamID: si.iceCream.ID,
+            Name: si.iceCream.Name,
+            Price: si.iceCream.Price,
+            Quantity: si.quantity,
+            PictureUrl: si.iceCream.PictureUrl
+        }));
 
         try {
             await req('/transaction/create', {
                 CustomerName: customerName,
                 FinalAmount: finalAmount,
-                Status: 'Pending'
+                Status: 'Pending',
+                Items: itemsPayload
             });
             alert('Checkout successful!');
-            setCartItems([]);
-            localStorage.removeItem('cart');
+            // Keep only unselected items
+            updateCart(cartItems.filter(item => !item.selected));
         } catch (e: any) {
             alert('Checkout failed: ' + (e.message || 'Unknown error'));
         } finally {
@@ -58,14 +93,29 @@ export default function CustomerCart() {
         }
     };
 
-    const total = cartItems.reduce((sum, item) => sum + item.Price, 0);
+    const total = cartItems.filter(item => item.selected).reduce((sum, item) => sum + (item.iceCream.Price * item.quantity), 0);
 
     const columns = [
-        { header: 'Image', accessor: (row: IceCream) => <img src={row.PictureUrl || 'https://placehold.co/100x100?text=No+Image'} alt={row.Name} className="w-12 h-12 rounded object-cover" /> },
-        { header: 'Name', accessor: (row: IceCream) => <span className="font-semibold text-white">{row.Name}</span> },
-        { header: 'Flavour', accessor: (row: IceCream) => row.Flavour },
-        { header: 'Price', accessor: (row: IceCream) => `$${row.Price.toFixed(2)}` },
-        { header: 'Action', accessor: (row: IceCream, index: number) => (
+        { header: 'Select', accessor: (row: CartItem, index: number) => (
+            <input 
+                type="checkbox" 
+                checked={row.selected} 
+                onChange={() => handleToggleSelect(index)} 
+                className="w-5 h-5 accent-emerald-500 cursor-pointer"
+            />
+        )},
+        { header: 'Image', accessor: (row: CartItem) => <img src={row.iceCream.PictureUrl || 'https://placehold.co/100x100?text=No+Image'} alt={row.iceCream.Name} className="w-12 h-12 rounded object-cover" /> },
+        { header: 'Name', accessor: (row: CartItem) => <span className="font-semibold text-white">{row.iceCream.Name}</span> },
+        { header: 'Price', accessor: (row: CartItem) => `$${row.iceCream.Price.toFixed(2)}` },
+        { header: 'Qty', accessor: (row: CartItem, index: number) => (
+            <div className="flex items-center gap-2 bg-zinc-800 rounded-lg px-2 py-1 w-max">
+                <button onClick={() => handleQuantity(index, -1)} className="text-zinc-400 hover:text-white px-2 font-bold">-</button>
+                <span className="text-white w-4 text-center">{row.quantity}</span>
+                <button onClick={() => handleQuantity(index, 1)} className="text-zinc-400 hover:text-white px-2 font-bold">+</button>
+            </div>
+        )},
+        { header: 'Total', accessor: (row: CartItem) => `$${(row.iceCream.Price * row.quantity).toFixed(2)}` },
+        { header: 'Action', accessor: (row: CartItem, index: number) => (
             <button 
                 onClick={() => handleRemove(index)}
                 className="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 px-3 py-1 rounded-lg text-sm font-medium transition-colors"

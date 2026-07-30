@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	"github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/auth-service/config"
 	"github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/transaction-service/core/domain"
@@ -17,6 +18,9 @@ func NewTransactionUsecase(transRepo domain.TransactionRepository, cfg *config.C
 }
 
 func (u *TransactionUsecaseStruct) CreateTransaction(ctx context.Context, trx domain.Transaction) error {
+	if trx.DateTime == "" {
+		trx.DateTime = time.Now().Format("2006-01-02 15:04:05")
+	}
 	return u.TransactionRepo.CreateTransaction(ctx, trx)
 }
 

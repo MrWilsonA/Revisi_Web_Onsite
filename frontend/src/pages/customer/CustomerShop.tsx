@@ -5,6 +5,7 @@ import IceCreamCard from '../../components/IceCreamCard';
 import DebounceSearch from '../../components/DebounceSearch';
 import Pagination from '../../components/Pagination';
 import LoadingSkeleton from '../../components/LoadingSkeleton';
+import IceCreamDetailModal from '../../components/IceCreamDetailModal';
 
 export default function CustomerShop() {
     const [iceCreams, setIceCreams] = useState<IceCream[]>([]);
@@ -12,6 +13,7 @@ export default function CustomerShop() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [search, setSearch] = useState('');
+    const [selectedIceCream, setSelectedIceCream] = useState<IceCream | null>(null);
 
     const fetchIceCreams = async () => {
         setLoading(true);
@@ -45,17 +47,39 @@ export default function CustomerShop() {
                     Array.from({ length: 25 }).map((_, i) => <LoadingSkeleton key={i} />)
                 ) : iceCreams.length > 0 ? (
                     iceCreams.map(ic => <IceCreamCard key={ic.ID} iceCream={ic} actionLabel="Add to Cart" onAction={() => {
-                        const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-                        existingCart.push(ic);
+                        let existingCart: any[] = [];
+                        try {
+                            existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+                        } catch(e) {}
+                        
+                        // Migrate old cart if necessary
+                        if (existingCart.length > 0 && !existingCart[0].iceCream) {
+                            existingCart = [];
+                        }
+
+                        const existingItem = existingCart.find(item => item.iceCream.ID === ic.ID);
+                        if (existingItem) {
+                            existingItem.quantity += 1;
+                        } else {
+                            existingCart.push({ iceCream: ic, quantity: 1, selected: true });
+                        }
+                        
                         localStorage.setItem('cart', JSON.stringify(existingCart));
                         alert('Added ' + ic.Name + ' to cart!');
-                    }} />)
+                    }} onClick={() => setSelectedIceCream(ic)} />)
                 ) : (
                     <div className="col-span-full py-20 text-center text-zinc-500 text-lg">No ice creams found.</div>
                 )}
             </div>
 
             <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+
+            {selectedIceCream && (
+                <IceCreamDetailModal 
+                    iceCream={selectedIceCream} 
+                    onClose={() => setSelectedIceCream(null)} 
+                />
+            )}
         </div>
     );
 }
