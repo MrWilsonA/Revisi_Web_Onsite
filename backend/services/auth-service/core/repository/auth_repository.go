@@ -49,13 +49,13 @@ func (r *UserRepositoryImpl) Create(c context.Context, user domain.User) error {
 }
 
 func (r *UserRepositoryImpl) UpdateEmail(c context.Context, id uint, newEmail string) error {
-	return r.db.WithContext(c).Where("id = ?", id).Update("email", newEmail).Error
+	return r.db.WithContext(c).Model(&domain.User{}).Where("id = ?", id).Update("email", newEmail).Error
 }
 
 func (r *UserRepositoryImpl) UpdateUsername(c context.Context, id uint, newUsername string) error {
-	return r.db.WithContext(c).Where("id = ?", id).Update("username", newUsername).Error
+	return r.db.WithContext(c).Model(&domain.User{}).Where("id = ?", id).Update("username", newUsername).Error
 }
 
 func (r *UserRepositoryImpl) UpdatePassword(c context.Context, id uint, newPassword string) error {
-	return r.db.WithContext(c).Where("id = ?", id).Update("password", newPassword).Error
+	return r.db.WithContext(c).Model(&domain.User{}).Where("id = ?", id).Update("password", newPassword).Error
 }
