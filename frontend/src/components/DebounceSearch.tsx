@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search } from 'react-feather';
 
 interface Props {
@@ -9,12 +9,18 @@ interface Props {
 export default function DebounceSearch({ onSearch, placeholder = 'Search...' }: Props) {
     const [query, setQuery] = useState('');
 
+    const onSearchRef = useRef(onSearch);
+
+    useEffect(() => {
+        onSearchRef.current = onSearch;
+    }, [onSearch]);
+
     useEffect(() => {
         const handler = setTimeout(() => {
-            onSearch(query);
+            onSearchRef.current(query);
         }, 500);
         return () => clearTimeout(handler);
-    }, [query, onSearch]);
+    }, [query]);
 
     return (
         <div className="relative w-full max-w-md">

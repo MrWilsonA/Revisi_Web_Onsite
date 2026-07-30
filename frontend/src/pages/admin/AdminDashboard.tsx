@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { reqGet } from '../../api/api';
 import type { IceCream } from '../../dto/IceCream';
 import IceCreamCard from '../../components/IceCreamCard';
@@ -30,6 +30,11 @@ export default function AdminDashboard() {
         fetchIceCreams();
     }, [page, search]);
 
+    const handleSearch = useCallback((q: string) => {
+        setSearch(q);
+        setPage(1);
+    }, []);
+
     return (
         <div className="w-full">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -37,7 +42,7 @@ export default function AdminDashboard() {
                     <h1 className="text-3xl font-bold text-white mb-1">Ice Cream Catalog</h1>
                     <p className="text-zinc-400">Manage your available flavors and products.</p>
                 </div>
-                <DebounceSearch onSearch={(q) => { setSearch(q); setPage(1); }} placeholder="Search flavors..." />
+                <DebounceSearch onSearch={handleSearch} placeholder="Search flavors..." />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
