@@ -1,14 +1,26 @@
 {
     "identities": [
         {
-            "name": "icecreamuser",
-            "credentials" : [
+            "name": "tpa_onsite",
+            "credentials": [
                 {
-                    "accessKey": "icecreamaccess",
-                    "secretKey": "icecreamsecret"
+                    "accessKey": "tpa_onsite",
+                    "secretKey": "tpa_onsite"
                 }
             ],
-            "actions" : [ "Read", "Write", "List", "Tagging", "Admin" ]
+            "actions": [
+                "Read",
+                "Write",
+                "List",
+                "Tagging",
+                "Admin"
+            ]
+        },
+        {
+            "name": "anonymous",
+            "actions": [
+                "Read"
+            ]
         }
     ]
 }

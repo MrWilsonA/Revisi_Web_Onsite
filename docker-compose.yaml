@@ -8,14 +8,14 @@ services:
       - "8080:8080"
     depends_on:
       pgpool:
-        condition: service_started  
+        condition: service_started
       redis:
         condition: service_started
     env_file:
       - ./backend/.env
     networks:
       - eskrim
-  
+
   postgres-master:
     image: bitnami/postgresql:latest
     environment:
@@ -35,7 +35,7 @@ services:
       - ./init-db:/docker-entrypoint-initdb.d
     networks:
       - eskrim
-  
+
   postgres-slave:
     image: bitnami/postgresql:latest
     environment:
@@ -73,7 +73,7 @@ services:
       - "5432:5432"
     networks:
       - eskrim
-  
+
   frontend:
     build:
       context: ./frontend
@@ -85,7 +85,7 @@ services:
       - /app/node_modules
     networks:
       - eskrim
-    
+
   redis:
     image: redis:latest
     ports:
@@ -96,52 +96,14 @@ services:
     networks:
       - eskrim
 
-  seaweedfs-master:
+  seaweedfs:
     image: chrislusf/seaweedfs:latest
-    command: 'master -ip="seaweedfs-master" -mdir=/data -ip.bind=0.0.0.0 -port=9333'
-    ports:
-      - "9333:9333"
-    volumes:
-      - seaweedfs_master_data:/data
-    networks:
-      - eskrim
-
-  seaweedfs-filer:
-    image: chrislusf/seaweedfs:latest
-    command: 'filer -ip="seaweedfs-filer" -master="seaweedfs-master" -ip.bind=0.0.0.0 -port=8888'
-    ports:
-      - "8888:8888"
-    volumes:
-      - seaweedfs_filer_data:/data
-    depends_on:
-      - seaweedfs-master
-      - seaweedfs-volume
-    networks:
-      - eskrim
-
-  seaweedfs-volume:
-    image: chrislusf/seaweedfs:latest
-    command: 'volume -master="seaweedfs-master:9333" -dir=/data -ip=seaweedfs-volume -ip.bind=0.0.0.0 -port=8081'
-    ports:
-      - "8081:8081"
-    volumes:
-      - seaweedfs_volume_data:/data
-    depends_on:
-      - seaweedfs-master
-    networks:
-      - eskrim
-
-  seaweedfs-s3:
-    image: chrislusf/seaweedfs:latest
-    command: 's3 -filer="filer:8888" -ip.bind=0.0.0.0 -port=8333 -config="/etc/seaweedfs/s3.json"'
     ports:
       - "8333:8333"
+    command: 'server -dir:/data -s3 -s3.config=/etc/seaweedfs/s3.json -filer'
     volumes:
-      - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json
-    depends_on:
-      - seaweedfs-master
-      - seaweedfs-volume
-      - seaweedfs-filer
+      - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+      - seaweedfs_data:/data
     networks:
       - eskrim
 
@@ -154,8 +116,7 @@ services:
     depends_on:
       - service
       - frontend
-      - seaweedfs-master
-      - seaweedfs-volume
+      - seaweedfs
     networks:
       - eskrim
 
@@ -168,6 +129,4 @@ volumes:
     driver: local
   postgres_master_data:
   postgres_slave_data:
-  seaweedfs_master_data:
-  seaweedfs_volume_data:
-  seaweedfs_filer_data:
+  seaweedfs_data:

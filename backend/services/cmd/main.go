@@ -64,9 +64,12 @@ func main() {
 	uc := usecase.NewAuthUsecase(userRepo, cacheRepo, *jwtMgr)
 	handler := http.NewAuthHandler(uc, cookieSecure)
 
+	minioClient := cfg.NewSeaweedClient()
+	cfg.InitStorage(minioClient)
+
 	pRepo := productRepo.NewIceCreamRepository(db)
 	pUc := productUsecase.NewIceCreamUsecase(pRepo, cfg)
-	pHandler := productHandler.NewProductHandler(pUc, cookieSecure)
+	pHandler := productHandler.NewProductHandler(pUc, minioClient, cookieSecure)
 
 	tRepo := transactionRepo.NewTransactionRepository(db)
 	tUc := transactionUsecase.NewTransactionUsecase(tRepo, cfg)

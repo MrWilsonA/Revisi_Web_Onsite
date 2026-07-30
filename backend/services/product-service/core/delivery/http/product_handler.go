@@ -1,27 +1,26 @@
 package http
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
 
 	"github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/product-service/core/domain"
 	"github.com/gin-gonic/gin"
+	"github.com/minio/minio-go/v7"
 )
 
 type ProductHandler struct {
 	productUsecase domain.IceCreamUseCase
+	minioClient    *minio.Client
 	cookieSecure   bool
 }
 
-func NewProductHandler(usecase domain.IceCreamUseCase, cookieSecure bool) *ProductHandler {
+func NewProductHandler(usecase domain.IceCreamUseCase, minioClient *minio.Client, cookieSecure bool) *ProductHandler {
 	return &ProductHandler{
 		productUsecase: usecase,
+		minioClient:    minioClient,
 		cookieSecure:   cookieSecure,
 	}
 }
@@ -45,69 +44,17 @@ func (ph *ProductHandler) CreateIceCream(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// 1. Get fid from SeaweedFS Master
-	seaweedMaster := os.Getenv("SEAWEEDFS_MASTER")
-	if seaweedMaster == "" {
-		seaweedMaster = "seaweedfs-master:9333"
-	}
-
-	resp, err := http.Get("http://" + seaweedMaster + "/dir/assign")
+	// Upload ke S3 menggunakan MinIO client
+	objectName := header.Filename // atau generate UUID biar unik
+	_, err = ph.minioClient.PutObject(c.Request.Context(), "eskrim", objectName, file, header.Size, minio.PutObjectOptions{
+		ContentType: header.Header.Get("Content-Type"),
+	})
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": "Failed to connect to SeaweedFS master"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": "Gagal upload ke S3"})
 		return
 	}
-	defer resp.Body.Close()
-
-	var assignResp struct {
-		Fid       string `json:"fid"`
-		Url       string `json:"url"`
-		PublicUrl string `json:"publicUrl"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&assignResp); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": "Failed to parse SeaweedFS response"})
-		return
-	}
-
-	// 2. Upload file to SeaweedFS Volume
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile("file", header.Filename)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": "Failed to create form file"})
-		return
-	}
-	if _, err := io.Copy(part, file); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": "Failed to copy file content"})
-		return
-	}
-	writer.Close()
-
-	// Internal docker network usually maps URL to volume server
-	uploadUrl := fmt.Sprintf("http://%s/%s", assignResp.Url, assignResp.Fid)
-	uploadReq, err := http.NewRequest("POST", uploadUrl, body)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": "Failed to prepare upload request"})
-		return
-	}
-	uploadReq.Header.Set("Content-Type", writer.FormDataContentType())
-
-	client := &http.Client{}
-	uploadResp, err := client.Do(uploadReq)
-	if err != nil || uploadResp.StatusCode >= 400 {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": "Failed to upload file to SeaweedFS"})
-		return
-	}
-	defer uploadResp.Body.Close()
-
-	// 3. Build Public URL
-	seaweedPublic := os.Getenv("SEAWEEDFS_PUBLIC_URL")
-	if seaweedPublic == "" {
-		seaweedPublic = "http://localhost:8081"
-	}
-	// Append thumbnail suffix if required (e.g., ?width=200&height=200) - For now just using plain fid, or we can add it based on rubric
-	// "appending the thumbnail suffix (defined in env file)" -> let's check if there's an env for THUMBNAIL_SUFFIX, if not, hardcode standard suffix
-	thumbnailSuffix := os.Getenv("THUMBNAIL_SUFFIX")
-	finalUrl := fmt.Sprintf("%s/%s%s", seaweedPublic, assignResp.Fid, thumbnailSuffix)
+	// Buat public URL
+	finalUrl := fmt.Sprintf("%s/%s/%s", os.Getenv("S3_PUBLIC_URL"), "eskrim", objectName)
 
 	req := domain.IceCream{
 		Name:        name,
