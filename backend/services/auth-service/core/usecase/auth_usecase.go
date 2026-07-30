@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/auth-service/core/domain"
-	"github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/auth-service/pkg/jwt"
+	"github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/pkg/jwt"
 )
 
 type AuthUsecaseInterface interface {
@@ -36,9 +36,9 @@ func (a *AuthUsecase) IssueToken(c context.Context, user domain.User) (*LoginRes
 	}
 
 	return &LoginResponse{
-		AccessToken: accessToken,
+		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
-		Role: user.Role,
+		Role:         user.Role,
 	}, nil
 }
 
@@ -77,7 +77,7 @@ func (a *AuthUsecase) RefreshToken(c context.Context, req RefreshTokenRequest) (
 		return nil, fmt.Errorf("User Doesnt Exists")
 	}
 
-	return  a.IssueToken(c, *user)
+	return a.IssueToken(c, *user)
 }
 
 // Register implements AuthUsecaseInterface.
@@ -91,7 +91,7 @@ func (a *AuthUsecase) Register(c context.Context, req RegisterRequest) error {
 	}
 
 	user := domain.User{
-		Email: req.Email,
+		Email:    req.Email,
 		Username: req.Username,
 		Password: req.Password,
 	}
@@ -106,7 +106,7 @@ func (a *AuthUsecase) Register(c context.Context, req RegisterRequest) error {
 // UpdateEmail implements AuthUsecaseInterface.
 func (a *AuthUsecase) UpdateEmail(c context.Context, req UpdateEmailRequest) error {
 	if exsiting, _ := a.userRepo.GetByID(c, req.ID); exsiting == nil {
-		return  fmt.Errorf("user doesnt exists")
+		return fmt.Errorf("user doesnt exists")
 	}
 
 	return a.userRepo.UpdateEmail(c, req.ID, req.NewEmail)

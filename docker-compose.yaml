@@ -139,6 +139,20 @@ services:
     networks:
       - eskrim
 
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - service
+      - frontend
+      - seaweedfs-master
+      - seaweedfs-volume
+    networks:
+      - eskrim
+
 networks:
   eskrim:
     driver: bridge
