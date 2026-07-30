@@ -20,7 +20,7 @@ import (
 	transactionDomain "github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/transaction-service/core/domain"
 	transactionHandler "github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/transaction-service/core/handler"
 	transactionRepo "github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/transaction-service/core/repository"
-	transactionUsecase "github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/transaction-service/usecase"
+	transactionUsecase "github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/transaction-service/core/usecase"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
