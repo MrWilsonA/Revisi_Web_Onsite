@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080/api';
+const BASE_URL = 'http://127.0.0.1:8080/api';
 
 const getHeaders = () => {
     const token = localStorage.getItem('access_token');
@@ -8,7 +8,7 @@ const getHeaders = () => {
     };
 };
 
-export const req = async <T> (path: string, body?: object): Promise<T> => {
+export const req = async <T>(path: string, body?: object): Promise<T> => {
     const res = await fetch(`${BASE_URL}${path}`, {
         method: 'POST',
         headers: getHeaders(),
@@ -19,7 +19,7 @@ export const req = async <T> (path: string, body?: object): Promise<T> => {
     return data as T;
 };
 
-export const reqGet = async <T> (path: string): Promise<T> => {
+export const reqGet = async <T>(path: string): Promise<T> => {
     const res = await fetch(`${BASE_URL}${path}`, {
         method: 'GET',
         headers: getHeaders()
@@ -29,7 +29,7 @@ export const reqGet = async <T> (path: string): Promise<T> => {
     return data as T;
 };
 
-export const reqPatch = async <T> (path: string, body: object): Promise<T> => {
+export const reqPatch = async <T>(path: string, body: object): Promise<T> => {
     const res = await fetch(`${BASE_URL}${path}`, {
         method: 'PATCH',
         headers: getHeaders(),
@@ -40,7 +40,7 @@ export const reqPatch = async <T> (path: string, body: object): Promise<T> => {
     return data as T;
 };
 
-export const reqDelete = async <T> (path: string): Promise<T> => {
+export const reqDelete = async <T>(path: string): Promise<T> => {
     const res = await fetch(`${BASE_URL}${path}`, {
         method: 'DELETE',
         headers: getHeaders(),

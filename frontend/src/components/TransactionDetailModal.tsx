@@ -25,19 +25,19 @@ export default function TransactionDetailModal({ transaction, onClose }: Props) 
                     &times;
                 </button>
                 <div className="p-8 pb-4 border-b border-zinc-800">
-                    <h2 className="text-2xl font-black text-white mb-2">Transaction #{transaction.ID}</h2>
-                    <p className="text-zinc-400">Date: {transaction.DateTime} | Customer: {transaction.CustomerName}</p>
+                    <h2 className="text-2xl font-black text-white mb-2">Transaction #{transaction.id}</h2>
+                    <p className="text-zinc-400">Date: {transaction.date_time} | Customer: {transaction.customer_name}</p>
                 </div>
                 <div className="p-8 overflow-y-auto flex-1">
-                    {transaction.Items && transaction.Items.length > 0 ? (
-                        <Table data={transaction.Items} columns={columns} />
+                    {transaction.items && transaction.items.length > 0 ? (
+                        <Table data={transaction.items} columns={columns} />
                     ) : (
                         <div className="text-zinc-500 text-center py-8">No items found for this transaction.</div>
                     )}
                 </div>
                 <div className="p-6 bg-zinc-950 border-t border-zinc-800 flex justify-between items-center">
                     <span className="text-zinc-400 font-medium">Final Payment Amount:</span>
-                    <span className="text-2xl font-bold text-emerald-400">${transaction.FinalAmount.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-emerald-400">${Number(transaction.final_amount || 0).toFixed(2)}</span>
                 </div>
             </div>
         </div>

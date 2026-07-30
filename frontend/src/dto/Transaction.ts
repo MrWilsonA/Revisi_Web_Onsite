@@ -1,8 +1,8 @@
 export interface Transaction {
-    ID: number;
-    DateTime: string;
-    CustomerName: string;
-    FinalAmount: number;
-    Status: string;
-    Items?: any[];
+    id: number;
+    date_time: string;
+    customer_name: string;
+    final_amount: number;
+    status: string;
+    items?: any[];
 }

@@ -1,10 +1,6 @@
 import { useState } from 'react';
-import { req } from '../../api/api';
-import type { CreateIceCreamResponse } from '../../dto/IceCream';
-import { useNavigate } from 'react-router-dom';
 
 export default function AdminCreateIceCream() {
-    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [price, setPrice] = useState<number | ''>('');
     const [flavour, setFlavour] = useState('');
@@ -33,7 +29,7 @@ export default function AdminCreateIceCream() {
             formData.append('picture', pictureFile);
 
             const token = localStorage.getItem('access_token');
-            const res = await fetch('http://localhost:8080/api/ice-cream/create', {
+            const res = await fetch('http://127.0.0.1:8080/api/ice-cream/create', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -69,7 +65,7 @@ export default function AdminCreateIceCream() {
                     {error}
                 </div>
             )}
-            
+
             {success && (
                 <div className="bg-emerald-500/10 border border-emerald-500/50 text-emerald-400 px-4 py-3 rounded-xl mb-6 text-sm">
                     Ice cream created successfully!
