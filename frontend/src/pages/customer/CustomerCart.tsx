@@ -1,0 +1,106 @@
+import { useState, useEffect } from 'react';
+import { req } from '../../api/api';
+import type { IceCream } from '../../dto/IceCream';
+import Table from '../../components/Table';
+
+const parseJwt = (token: string) => {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+};
+
+export default function CustomerCart() {
+    const [cartItems, setCartItems] = useState<IceCream[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const stored = JSON.parse(localStorage.getItem('cart') || '[]');
+        setCartItems(stored);
+    }, []);
+
+    const handleRemove = (index: number) => {
+        const newCart = [...cartItems];
+        newCart.splice(index, 1);
+        setCartItems(newCart);
+        localStorage.setItem('cart', JSON.stringify(newCart));
+    };
+
+    const handleCheckout = async () => {
+        if (cartItems.length === 0) return;
+        setLoading(true);
+        
+        let customerName = 'Customer';
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            const decoded = parseJwt(token);
+            if (decoded && decoded.UserId) {
+                customerName = `User #${decoded.UserId}`;
+            }
+        }
+
+        const finalAmount = cartItems.reduce((sum, item) => sum + item.Price, 0);
+
+        try {
+            await req('/transaction/create', {
+                CustomerName: customerName,
+                FinalAmount: finalAmount,
+                Status: 'Pending'
+            });
+            alert('Checkout successful!');
+            setCartItems([]);
+            localStorage.removeItem('cart');
+        } catch (e: any) {
+            alert('Checkout failed: ' + (e.message || 'Unknown error'));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const total = cartItems.reduce((sum, item) => sum + item.Price, 0);
+
+    const columns = [
+        { header: 'Image', accessor: (row: IceCream) => <img src={row.PictureUrl || 'https://placehold.co/100x100?text=No+Image'} alt={row.Name} className="w-12 h-12 rounded object-cover" /> },
+        { header: 'Name', accessor: (row: IceCream) => <span className="font-semibold text-white">{row.Name}</span> },
+        { header: 'Flavour', accessor: (row: IceCream) => row.Flavour },
+        { header: 'Price', accessor: (row: IceCream) => `$${row.Price.toFixed(2)}` },
+        { header: 'Action', accessor: (row: IceCream, index: number) => (
+            <button 
+                onClick={() => handleRemove(index)}
+                className="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 px-3 py-1 rounded-lg text-sm font-medium transition-colors"
+            >
+                Remove
+            </button>
+        )}
+    ];
+
+    return (
+        <div className="w-full">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <h1 className="text-3xl font-bold text-white mb-1">Your Cart</h1>
+                    <p className="text-zinc-400">Review your selected ice creams and checkout.</p>
+                </div>
+                {cartItems.length > 0 && (
+                    <button 
+                        onClick={handleCheckout}
+                        disabled={loading}
+                        className="bg-emerald-400 text-black px-6 py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors disabled:opacity-50"
+                    >
+                        {loading ? 'Processing...' : `Checkout - $${total.toFixed(2)}`}
+                    </button>
+                )}
+            </div>
+
+            {cartItems.length > 0 ? (
+                <Table data={cartItems} columns={columns} />
+            ) : (
+                <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-12 text-center text-zinc-500">
+                    <p className="text-lg">Your cart is currently empty.</p>
+                    <p className="mt-2">Go to the Shop to add some delicious ice cream!</p>
+                </div>
+            )}
+        </div>
+    );
+}
