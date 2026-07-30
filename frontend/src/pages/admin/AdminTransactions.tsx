@@ -44,7 +44,7 @@ export default function AdminTransactions() {
             if (statusFilter && trx.Status !== statusFilter) return false;
             if (startDate || endDate) {
                 // Assuming DateTime is "YYYY-MM-DD HH:mm:ss" or similar
-                const trxDate = trx.DateTime.split(' ')[0];
+                const trxDate = trx.DateTime ? trx.DateTime.split(' ')[0] : '';
                 if (startDate && trxDate < startDate) return false;
                 if (endDate && trxDate > endDate) return false;
             }
@@ -53,20 +53,20 @@ export default function AdminTransactions() {
     }, [transactions, statusFilter, startDate, endDate]);
 
     const columns = [
-        { header: 'ID', accessor: (row: Transaction) => `#${row.ID}` },
-        { header: 'Customer', accessor: (row: Transaction) => row.CustomerName },
-        { header: 'Date', accessor: (row: Transaction) => row.DateTime },
-        { header: 'Total', accessor: (row: Transaction) => `$${row.FinalAmount.toFixed(2)}` },
+        { header: 'ID', accessor: (row: Transaction) => `#${row?.ID}` },
+        { header: 'Customer', accessor: (row: Transaction) => row?.CustomerName },
+        { header: 'Date', accessor: (row: Transaction) => row?.DateTime || '-' },
+        { header: 'Total', accessor: (row: Transaction) => `$${Number(row?.FinalAmount || 0).toFixed(2)}` },
         { header: 'Status', accessor: (row: Transaction) => (
-            <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${row.Status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                {row.Status}
+            <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${row?.Status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                {row?.Status || 'Unknown'}
             </span>
         )},
         { header: 'Actions', accessor: (row: Transaction) => (
             <div className="flex gap-2 items-center">
                 <select 
-                    value={row.Status}
-                    onChange={(e) => updateStatus(row.ID, e.target.value)}
+                    value={row?.Status}
+                    onChange={(e) => updateStatus(row?.ID, e.target.value)}
                     className="bg-zinc-800 border border-zinc-700 text-white rounded px-2 py-1 text-sm focus:outline-none"
                 >
                     <option value="Pending">Pending</option>

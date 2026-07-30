@@ -22,12 +22,12 @@ export default function CustomerHistory() {
     }, []);
 
     const columns = [
-        { header: 'Order ID', accessor: (row: Transaction) => `#${row.ID}` },
-        { header: 'Date', accessor: (row: Transaction) => row.DateTime },
-        { header: 'Total', accessor: (row: Transaction) => `$${row.FinalAmount.toFixed(2)}` },
+        { header: 'Order ID', accessor: (row: Transaction) => `#${row?.ID}` },
+        { header: 'Date', accessor: (row: Transaction) => row?.DateTime || '-' },
+        { header: 'Total', accessor: (row: Transaction) => `$${Number(row?.FinalAmount || 0).toFixed(2)}` },
         { header: 'Status', accessor: (row: Transaction) => (
-            <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${row.Status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                {row.Status}
+            <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${row?.Status === 'Completed' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+                {row?.Status || 'Unknown'}
             </span>
         )},
         { header: 'Action', accessor: (row: Transaction) => (
