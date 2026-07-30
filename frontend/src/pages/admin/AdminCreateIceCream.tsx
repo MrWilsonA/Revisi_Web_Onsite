@@ -33,7 +33,7 @@ export default function AdminCreateIceCream() {
             formData.append('picture', pictureFile);
 
             const token = localStorage.getItem('access_token');
-            const res = await fetch('http://localhost:8080/ice-cream/create', {
+            const res = await fetch('http://localhost:8080/api/ice-cream/create', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
