@@ -1,6 +1,6 @@
-CREATE DATABASE ESkrim;
+CREATE DATABASE eskrim;
 
-\c ESkrim;
+\c eskrim;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,

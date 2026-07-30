@@ -13,16 +13,6 @@ export default defineConfig({
     port: 3000,
     allowedHosts: true,
     proxy: {
-      '/seaweed': {
-        target: 'http://seaweedfs-master:9333',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/seaweed/, '')
-      },
-      '/volume': {
-        target: 'http://seaweedfs-volume:8081',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/volume/, '')
-      }
     }
   }
 })

@@ -1,3 +1,14 @@
+\c eskrim;
+
+CREATE TABLE IF NOT EXISTS ice_creams (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255),
+    flavour VARCHAR(255),
+    picture_url TEXT,
+    price FLOAT,
+    description TEXT
+);
+
 INSERT INTO ice_creams (name, flavour, picture_url, price, description) VALUES
 ('Slime Gelato', 'Mint', '/slime.png', 4.50, 'A refreshing minty slime experience.'),
 ('Slime Sundae', 'Vanilla', '/slime.png', 5.00, 'Classic vanilla topped with green slime syrup.'),

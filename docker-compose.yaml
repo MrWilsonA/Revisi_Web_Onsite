@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
-    ports:
-      - "8080:8080"
     depends_on:
       pgpool:
         condition: service_started
@@ -88,8 +86,6 @@ services:
 
   redis:
     image: redis:latest
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     restart: unless-stopped
@@ -100,7 +96,7 @@ services:
     image: chrislusf/seaweedfs:latest
     ports:
       - "8333:8333"
-    command: 'server -dir:/data -s3 -s3.config=/etc/seaweedfs/s3.json -filer'
+    command: 'server -dir=/data -s3 -s3.config=/etc/seaweedfs/s3.json -filer'
     volumes:
       - ./seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
       - seaweedfs_data:/data
