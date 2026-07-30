@@ -21,35 +21,31 @@ export default function AdminCreateIceCream() {
         setLoading(true);
 
         try {
-            let finalPictureUrl = '';
-            if (pictureFile) {
-                // 1. Get fid from seaweed-master
-                const assignRes = await fetch('/seaweed/dir/assign');
-                if (!assignRes.ok) throw new Error('Failed to get SeaweedFS assign');
-                const assignData = await assignRes.json();
-                
-                // 2. Upload file to seaweed-volume using fid
-                const formData = new FormData();
-                formData.append('file', pictureFile);
-                const uploadRes = await fetch('/volume/' + assignData.fid, {
-                    method: 'POST',
-                    body: formData
-                });
-                if (!uploadRes.ok) throw new Error('Failed to upload image to SeaweedFS');
-                
-                // 3. Set the final accessible URL
-                finalPictureUrl = `http://localhost:8081/${assignData.fid}`;
-            } else {
+            if (!pictureFile) {
                 throw new Error('Please select an image file');
             }
 
-            await req<CreateIceCreamResponse>('/ice-cream/create', {
-                Name: name,
-                Price: Number(price),
-                Flavour: flavour,
-                Description: description,
-                PictureUrl: finalPictureUrl
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price.toString());
+            formData.append('description', description);
+            formData.append('flavour', flavour);
+            formData.append('picture', pictureFile);
+
+            const token = localStorage.getItem('access_token');
+            const res = await fetch('http://localhost:8080/ice-cream/create', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
             });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.err || data.error || 'Failed to create ice cream');
+            }
+
             setSuccess(true);
             setName('');
             setPrice('');
