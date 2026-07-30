@@ -1,0 +1,14 @@
+{
+    "identities": [
+        {
+            "name": "icecreamuser",
+            "credentials" : [
+                {
+                    "accessKey": "icecreamaccess",
+                    "secretKey": "icecreamsecret"
+                }
+            ],
+            "actions" : [ "Read", "Write", "List", "Tagging", "Admin" ]
+        }
+    ]
+}
