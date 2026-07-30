@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CAROUSEL_IMAGES = [
-    'https://images.unsplash.com/photo-1570197780879-c5c8e312a433?auto=format&fit=crop&q=80',
+    'https://images.pexels.com/photos/1362534/pexels-photo-1362534.jpeg?cs=srgb&dl=pexels-teejay-1362534.jpg&fm=jpg',
     'https://images.unsplash.com/photo-1557142046-c704a3adf364?auto=format&fit=crop&q=80',
     'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&q=80'
 ];
@@ -23,9 +23,8 @@ export default function LandingPage() {
             {CAROUSEL_IMAGES.map((src, index) => (
                 <div
                     key={src}
-                    className={`absolute inset-0 transition-opacity duration-1000 ${
-                        index === currentIndex ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${index === currentIndex ? 'opacity-100' : 'opacity-0'
+                        }`}
                 >
                     <div className="absolute inset-0 bg-black/40 z-10" />
                     <img
@@ -51,15 +50,14 @@ export default function LandingPage() {
                     Get Started
                 </button>
             </div>
-            
+
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
                 {CAROUSEL_IMAGES.map((_, index) => (
                     <button
                         key={index}
                         onClick={() => setCurrentIndex(index)}
-                        className={`w-3 h-3 rounded-full transition-all ${
-                            index === currentIndex ? 'bg-rose-400 w-8' : 'bg-white/50 hover:bg-white'
-                        }`}
+                        className={`w-3 h-3 rounded-full transition-all ${index === currentIndex ? 'bg-rose-400 w-8' : 'bg-white/50 hover:bg-white'
+                            }`}
                     />
                 ))}
             </div>
