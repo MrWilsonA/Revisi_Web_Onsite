@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Acad600-TPA/WEB-EJ-NH-JR-KO-WA-261/backend/services/product-service/core/domain"
 	"github.com/gin-gonic/gin"
@@ -36,10 +37,19 @@ func (ph *ProductHandler) CreateIceCream(c *gin.Context) {
 }
 
 func (ph *ProductHandler) GetAll(c *gin.Context) {
-	page := 1
-	limit := 10
+	pageStr := c.Query("page")
+	limitStr := c.Query("limit")
 	search := c.Query("search")
-	// For simplicity, skip parsing page/limit from query here, just use defaults or basic conversion
+
+	page := 1
+	limit := 25
+
+	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+		page = p
+	}
+	if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+		limit = l
+	}
 	
 	icecreams, total, err := ph.productUsecase.GetAllIceCreams(c.Request.Context(), page, limit, search)
 	if err != nil {

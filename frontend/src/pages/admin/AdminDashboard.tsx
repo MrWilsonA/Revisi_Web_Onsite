@@ -16,9 +16,9 @@ export default function AdminDashboard() {
     const fetchIceCreams = async () => {
         setLoading(true);
         try {
-            const res = await reqGet<{data: IceCream[], total: number}>(`/ice-cream?search=${search}&page=${page}&limit=8`);
+            const res = await reqGet<{data: IceCream[], total: number}>(`/ice-cream?search=${search}&page=${page}&limit=25`);
             setIceCreams(res.data || []);
-            setTotalPages(Math.ceil((res.total || 0) / 8));
+            setTotalPages(Math.ceil((res.total || 0) / 25));
         } catch (e) {
             console.error(e);
         } finally {
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {loading ? (
-                    Array.from({ length: 8 }).map((_, i) => <LoadingSkeleton key={i} />)
+                    Array.from({ length: 25 }).map((_, i) => <LoadingSkeleton key={i} />)
                 ) : iceCreams.length > 0 ? (
                     iceCreams.map(ic => <IceCreamCard key={ic.ID} iceCream={ic} actionLabel="Edit Price" onAction={() => {}} />)
                 ) : (
