@@ -44,8 +44,8 @@ func Load() *Config {
 		JWTSECRET:       GetEnv("JWT_SECRET", ""),
 		S3ENDPOINT:      GetEnv("S3_ENDPOINT", "seaweedfs:8333"),
 		S3PUBLICURL:     GetEnv("S3_PUBLIC_URL", "http://localhost:8333"),
-		ACCESSKEYID:     GetEnv("ACCESS_KEY_ID", "icecreamuser"),
-		SECRETACCESSKEY: GetEnv("SECRET_ACCESS_KEY", "icecreamsecret"),
+		ACCESSKEYID:     GetEnv("ACCESS_KEY_ID", "tpa_onsite"),
+		SECRETACCESSKEY: GetEnv("SECRET_ACCESS_KEY", "tpa_onsite"),
 		BUCKETNAME:      GetEnv("BUCKET_NAME", "eskrim"),
 	}
 }
