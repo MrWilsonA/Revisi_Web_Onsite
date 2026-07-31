@@ -109,7 +109,13 @@ func (ph *ProductHandler) GetDetail(c *gin.Context) {
 		return
 	}
 
-	// if err = ph.productUsecase.GetDetail(c.Request.Context(), req.id)
+	icecream, err := ph.productUsecase.GetDetail(c.Request.Context(), req.id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, icecream)
 
 }
 

@@ -43,7 +43,7 @@ func NewRouter(h AuthHandler, ph *productHandler.ProductHandler, th *transaction
 		auth.PATCH("/update/password", JWTAuth(c, jwtMgr), h.UpdatePassword)
 		auth.POST("/refreshToken", h.RefreshToken)
 	}
-	product := r.Group("/api/ice-cream")
+	product := r.Group("/api/icecream")
 	{
 		product.POST("/create", ph.CreateIceCream)
 		product.GET("", ph.GetAll)
