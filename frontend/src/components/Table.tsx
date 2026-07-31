@@ -1,6 +1,8 @@
+import React from 'react';
+
 interface Column<T> {
     header: string;
-    accessor: (row: T) => React.ReactNode;
+    accessor: (row: T, index: number) => React.ReactNode;
 }
 
 interface Props<T> {
@@ -27,7 +29,7 @@ export default function Table<T>({ data, columns }: Props<T>) {
                             <tr key={rowIndex} className="hover:bg-zinc-800/50 transition-colors">
                                 {columns.map((col, colIndex) => (
                                     <td key={colIndex} className="py-4 px-6 text-zinc-300">
-                                        {col.accessor(row)}
+                                        {col.accessor(row, rowIndex)}
                                     </td>
                                 ))}
                             </tr>
